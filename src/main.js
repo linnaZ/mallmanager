@@ -6,8 +6,10 @@ import router from './router'
 import Elementui from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import '../static/css/reset.css'
+import myHttpServer from '@/plugins/http.js'
 
 Vue.use(Elementui)
+Vue.use(myHttpServer)
 
 Vue.config.productionTip = false
 

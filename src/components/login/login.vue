@@ -1,30 +1,46 @@
 <template>
-        <div class="login-wrap">
+    <div class="login-wrap">
 
-            <el-form class="login-form" label-position="top" label-width="80px" :model="formData">
-                <h2>用户登录</h2>
-                <el-form-item label="用户名">
-                    <el-input v-model="formData.username"></el-input>
-                </el-form-item>
-                <el-form-item label="密码">
-                    <el-input v-model="formData.password"></el-input>
-                </el-form-item>
-                <el-button class="login-button" type="primary">登录</el-button>
-            </el-form>
-        </div>
-
+        <el-form class="login-form" label-position="top" label-width="80px" :model="formData">
+            <h2>用户登录</h2>
+            <el-form-item label="用户名">
+                <el-input v-model="formData.username"></el-input>
+            </el-form-item>
+            <el-form-item label="密码">
+                <el-input v-model="formData.password"></el-input>
+            </el-form-item>
+            <el-button class="login-button" type="primary" @click="handelLogin()">登录</el-button>
+        </el-form>
+    </div>
 </template>
 
 <script>
 export default {
     data() {
         return {
-           
+
             formData: {
                 username: '',
                 password: ''
             }
         };
+    },
+
+    methods: {
+        handelLogin() {
+            this.$http.post('login', this.formData)
+                .then(res => {
+                    //   console.log(res)
+                    
+                    const {data,meta:{status,msg}}=res.data
+                    if (status === 200) {
+                        this.$router.push({ name: 'home' })
+                        this.$message.success(msg);
+                    }else{
+                        this.$message.error(msg);
+                    }
+                })
+        }
     }
 }
 </script>
@@ -44,12 +60,13 @@ export default {
     padding: 30px;
     border-radius: 10px
 }
-.login-button{
+
+.login-button {
     width: 100%;
     margin-top: 20px;
 }
-el-input{
+
+el-input {
     width: 100%;
 }
-
 </style>

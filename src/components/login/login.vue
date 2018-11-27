@@ -27,19 +27,21 @@ export default {
     },
 
     methods: {
-        handelLogin() {
-            this.$http.post('login', this.formData)
-                .then(res => {
-                    //   console.log(res)
-                    
+        // 将异步操作改为看起来像同步操作  es6新特性
+        async handelLogin() {
+            // 只有执行完下行代码取得结果才执行后面的代码
+           const res=await this.$http.post('login', this.formData)
+                    //   console.log(res)  
                     const {data,meta:{status,msg}}=res.data
                     if (status === 200) {
                         this.$router.push({ name: 'home' })
                         this.$message.success(msg);
+                        // 登录成功后将后天返回的data中token值存到localStorage
+                        localStorage.setItem('token',data.token)
                     }else{
                         this.$message.error(msg);
                     }
-                })
+                
         }
     }
 }

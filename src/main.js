@@ -7,12 +7,17 @@ import Elementui from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import '../static/css/reset.css'
 import myHttpServer from '@/plugins/http.js'
+import moment from "moment"
 
 Vue.use(Elementui)
 Vue.use(myHttpServer)
 
 Vue.config.productionTip = false
 
+// 设置日期格式的过滤器
+Vue.filter('fmtData',(v)=>{
+  return moment(v).format('YYYY-MM-DD')
+})
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

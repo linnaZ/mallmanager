@@ -104,9 +104,12 @@
 
 <script>
 export default {
-    return: {
+    
         data() {
-            true
+           return{
+               
+           }
+            
         },
         // 在vue实例创建完成之前
         beforeCreate() {
@@ -119,6 +122,8 @@ export default {
             }
             // if token 有 -> 继续渲染组件
         },
+    
+        
         methods: {
             handleSignout() {
                 // 清除session
@@ -128,7 +133,7 @@ export default {
             }
         }
 
-    }
+    
 }
 </script>
 <style>

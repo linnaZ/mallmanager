@@ -11,10 +11,10 @@
         <el-input placeholder="请输入内容" v-model="query" class="search" clearable @clear="loadUserList()">
             <el-button slot="append" icon="el-icon-search" @click="searchUserList()"></el-button>
         </el-input>
-        <el-button type="success" plain @click="dialogFormVisible=true">添加用户</el-button>
+        <el-button type="success" plain @click="dialogFormVisibleadd=true">添加用户</el-button>
 
         <!--表格-->
-        <el-table :data="userlist" style="width: 100%">
+        <el-table :data="userlist" style="width: 100%" height="350px">
             <el-table-column label="#" width="100%" type="index">
             </el-table-column>
             <el-table-column prop="username" label="姓名" width="120">
@@ -41,9 +41,9 @@
             </el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
-                    <el-button type="primary" icon="el-icon-edit" circle plain size="mini"></el-button>
+                    <el-button type="primary" icon="el-icon-edit" circle plain size="mini" @click="showEditDialog(scope.row)"></el-button>
                     <el-button type="success" icon="el-icon-check" circle plain size="mini"></el-button>
-                    <el-button type="danger" icon="el-icon-delete" circle plain size="mini"></el-button>
+                    <el-button type="danger" icon="el-icon-delete" circle plain size="mini" @click="deleteUser(scope.row.id)"></el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -53,7 +53,7 @@
         </el-pagination>
 
         <!--添加用户的对话框-->
-        <el-dialog title="添加新用户" :visible.sync="dialogFormVisible" >
+        <el-dialog title="添加新用户" :visible.sync="dialogFormVisibleadd">
             <el-form :model="form">
                 <el-form-item label="用户名" label-width="140">
                     <el-input v-model="form.username" autocomplete="off"></el-input>
@@ -68,11 +68,30 @@
                     <el-input v-model="form.mobile" autocomplete="off"></el-input>
                 </el-form-item>
 
-                
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
+                <el-button @click="dialogFormVisibleadd = false">取 消</el-button>
                 <el-button type="primary" @click="adduserList()">确 定</el-button>
+            </div>
+        </el-dialog>
+
+        <!--编辑用户对话框-->
+        <el-dialog title="编辑用户" :visible.sync="dialogFormVisibleEdit">
+            <el-form :model="form" label-position="right">
+                <el-form-item label="用户名" label-width="140" >
+                    <el-input v-model="form.username" autocomplete="off" disabled></el-input>
+                </el-form-item>
+                <el-form-item label="邮箱" label-width="140">
+                    <el-input v-model="form.email" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="电话" label-width="140">
+                    <el-input v-model="form.mobile" autocomplete="off"></el-input>
+                </el-form-item>
+
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisibleEdit = false">取 消</el-button>
+                <el-button type="primary" @click="editUser()">确 定</el-button>
             </div>
         </el-dialog>
     </el-card>
@@ -89,14 +108,15 @@ export default {
             pagesize: 4,
             value: true,
             total: 1,
-            form:{
-                username:'',
-                password:'',
-                email:'',
-                mobile:''
+            form: {
+                username: '',
+                password: '',
+                email: '',
+                mobile: ''
 
             },
-            dialogFormVisible:false
+            dialogFormVisibleadd: false,
+            dialogFormVisibleEdit:false
         }
     },
 
@@ -107,19 +127,72 @@ export default {
 
 
     methods: {
-        // 添加新用户
-        async adduserList(){
-            const res= await this.$http.post('users',this.form)
-                console.log(res)
-                const {data,meta:{msg,status}}=res.data
-                // 如果状态码为201 提交成功
-                if(status===201){
-                     this.$message.success(msg);
-                    this.dialogFormVisible=false
 
-                }else if(status===400){
-                     this.$message.error(msg);
+        // 编辑用户
+        async editUser(){
+            const res=await this.$http.put(`users/${this.form.id}`,this.form)
+            // console.log(res)
+            const {status,msg}=res.data.meta
+            if(status===200){
+                this.$message.success(msg)
+                this.dialogFormVisibleEdit=false
+                this.getUserList()
+            }
+        },
+
+        // 显示编辑对话框
+        showEditDialog(user){
+            // console.log(user)
+            this.dialogFormVisibleEdit=true
+            this.form=user
+            // console.log(this.form)
+        },
+        
+        // 删除用户
+        deleteUser(userId) {
+            this.$confirm('是否删除该用户', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(async () => {
+                // 当点击确定是执行then的回调函数中
+                const res = await this.$http.delete(`users/${userId}`)
+                console.log(userId)
+                console.log(res);
+                const { status, msg } = res.data.meta
+                if (status === 200) {
+                    // 提示删除成功
+                    this.$message({
+                        type: 'success',
+                        message: msg
+                    });
+                    // 更新视图
+                    this.getUserList()
                 }
+
+
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });
+            });
+        },
+        // 添加新用户
+        async adduserList() {
+            const res = await this.$http.post('users', this.form)
+            // console.log(res)
+            const { data, meta: { msg, status } } = res.data
+            // 如果状态码为201 提交成功
+            if (status === 201) {
+                this.$message.success(msg);
+                this.dialogFormVisibleadd= false
+                // 更新视图
+                this.getUserList()
+
+            } else if (status === 400) {
+                this.$message.error(msg);
+            }
 
         },
         // 点击搜索框的清除按钮触发
@@ -151,7 +224,7 @@ export default {
             this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
             const res = await this.$http
                 .get(`/users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
-            console.log(res)
+            // console.log(res)
             const { data, meta: { msg, status } } = res.data
             if (status === 200) {
                 this.userlist = data.users

@@ -8,10 +8,10 @@
         </el-breadcrumb>
 
         <!--搜索框-->
-        <el-input placeholder="请输入内容" v-model="query" class="search">
-            <el-button slot="append" icon="el-icon-search"></el-button>
+        <el-input placeholder="请输入内容" v-model="query" class="search" clearable @clear="loadUserList()">
+            <el-button slot="append" icon="el-icon-search" @click="searchUserList()"></el-button>
         </el-input>
-        <el-button type="success" plain>添加用户</el-button>
+        <el-button type="success" plain @click="dialogFormVisible=true">添加用户</el-button>
 
         <!--表格-->
         <el-table :data="userlist" style="width: 100%">
@@ -48,16 +48,33 @@
             </el-table-column>
         </el-table>
 
-        <el-pagination 
-            @size-change="handleSizeChange" 
-            @current-change="handleCurrentChange" 
-            :current-page='pagenum' 
-            :page-sizes="[2, 4, 6, 8]" 
-            :page-size='pagesize'
-            layout="total, sizes, prev, pager, next, jumper" 
-            :total="total">
+        <!--分页-->
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page='pagenum' :page-sizes="[2, 4, 6, 8]" :page-size='pagesize' layout="total, sizes, prev, pager, next, jumper" :total="total">
         </el-pagination>
 
+        <!--添加用户的对话框-->
+        <el-dialog title="添加新用户" :visible.sync="dialogFormVisible" >
+            <el-form :model="form">
+                <el-form-item label="用户名" label-width="140">
+                    <el-input v-model="form.username" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" label-width="140">
+                    <el-input v-model="form.password" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="邮箱" label-width="140">
+                    <el-input v-model="form.email" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="电话" label-width="140">
+                    <el-input v-model="form.mobile" autocomplete="off"></el-input>
+                </el-form-item>
+
+                
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">取 消</el-button>
+                <el-button type="primary" @click="adduserList()">确 定</el-button>
+            </div>
+        </el-dialog>
     </el-card>
 </template>
 
@@ -71,23 +88,66 @@ export default {
             pagenum: 1,
             pagesize: 4,
             value: true,
-            total:1,
-            handleSizeChange(val) {
-                console.log(`每页 ${val} 条`);
+            total: 1,
+            form:{
+                username:'',
+                password:'',
+                email:'',
+                mobile:''
+
             },
-            handleCurrentChange(val) {
-                console.log(`当前页: ${val}`);
-            }
+            dialogFormVisible:false
         }
     },
+
+
     created() {
         this.getUserList()
     },
+
+
     methods: {
-        // 需要授权的API需要在请求头设置必须在请求头中使用 Authorization 字段提供 token 令牌
+        // 添加新用户
+        async adduserList(){
+            const res= await this.$http.post('users',this.form)
+                console.log(res)
+                const {data,meta:{msg,status}}=res.data
+                // 如果状态码为201 提交成功
+                if(status===201){
+                     this.$message.success(msg);
+                    this.dialogFormVisible=false
+
+                }else if(status===400){
+                     this.$message.error(msg);
+                }
+
+        },
+        // 点击搜索框的清除按钮触发
+        loadUserList() {
+            this.getUserList()
+        },
+        // 搜索框
+        searchUserList() {
+            this.getUserList()
+        },
+
+        // 每页条数改变触发的方法
+        handleSizeChange(val) {
+            console.log(val)
+            this.pagesize = val
+            this.pagenum = 1
+            this.getUserList()
+        },
+        // 当前页发生改变时触发                                    
+        handleCurrentChange(val) {
+            console.log(val)
+            this.pagenum = val
+            this.getUserList()
+        },
+        // 获取用户数据
         async getUserList() {
+            // 需要授权的API需要在请求头设置必须在请求头中使用 Authorization 字段提供 token 令牌
             const AUTH_TOKEN = localStorage.getItem('token')
-            console.log(AUTH_TOKEN)
             this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
             const res = await this.$http
                 .get(`/users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
@@ -95,7 +155,7 @@ export default {
             const { data, meta: { msg, status } } = res.data
             if (status === 200) {
                 this.userlist = data.users
-                this.total=data.total
+                this.total = data.total
             }
         }
     }

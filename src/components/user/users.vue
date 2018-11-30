@@ -1,11 +1,7 @@
 <template>
     <el-card shadow="always" class="card">
         <!--面包屑    /首页/用户管理/用户列表-->
-        <el-breadcrumb separator="/">
-            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-            <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-            <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-        </el-breadcrumb>
+        <my-bread level1="用户管理" level2='用户列表'></my-bread>
 
         <!--搜索框-->
         <el-input placeholder="请输入内容" v-model="query" class="search" clearable @clear="loadUserList()">
@@ -276,9 +272,7 @@ export default {
         },
         // 获取用户数据
         async getUserList() {
-            // 需要授权的API需要在请求头设置必须在请求头中使用 Authorization 字段提供 token 令牌
-            const AUTH_TOKEN = localStorage.getItem('token')
-            this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
+           
             const res = await this.$http
                 .get(`/users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
             // console.log(res)

@@ -39,7 +39,7 @@
                                 <i class="el-icon-goods"></i>
                                 角色列表
                             </el-menu-item>
-                            <el-menu-item index="1-2">
+                            <el-menu-item index="rights">
                                 <i class="el-icon-goods"></i>
                                 权限列表
                             </el-menu-item>

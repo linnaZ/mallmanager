@@ -35,7 +35,7 @@
                             <span>权限管理</span>
                         </template>
                         <el-menu-item-group>
-                            <el-menu-item index="1-1">
+                            <el-menu-item index="role">
                                 <i class="el-icon-goods"></i>
                                 角色列表
                             </el-menu-item>
@@ -112,16 +112,16 @@ export default {
             
         },
         // 在vue实例创建完成之前
-        beforeCreate() {
-            // 获取token
-            const token = localStorage.getItem('token')
+        // beforeCreate() {
+        //     // 获取token
+        //     const token = localStorage.getItem('token')
 
-            if (!token) {
-                // token 没有 -> 登录
-                this.$router.push({ name: 'login' })
-            }
-            // if token 有 -> 继续渲染组件
-        },
+        //     if (!token) {
+        //         // token 没有 -> 登录
+        //         this.$router.push({ name: 'login' })
+        //     }
+        //     // if token 有 -> 继续渲染组件
+        // },
     
         
         methods: {

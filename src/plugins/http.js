@@ -11,8 +11,8 @@ axios.defaults.baseURL='http://localhost:8888/api/private/v1/'
 axios.interceptors.request.use(function (config) {
   // 在发送请求之前做些什么  
    // 需要授权的API需要在请求头设置必须在请求头中使用 Authorization 字段提供 token 令牌
-   console.log(config.url)
-   console.log('拦截器出发了')
+  //  console.log(config.url)
+  //  console.log('拦截器出发了')
   if(config.url!='login'){
     const AUTH_TOKEN = localStorage.getItem('token')
     config.headers['Authorization'] = AUTH_TOKEN

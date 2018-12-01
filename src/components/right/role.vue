@@ -83,7 +83,7 @@
       ></el-tree>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisibleadd = false">取 消</el-button>
-        <el-button type="primary" @click="adduserList()">确 定</el-button>
+        <el-button type="primary" @click="updateRight()">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
@@ -100,15 +100,43 @@ export default {
           children: 'children',
           label: 'authName'
         },
-        checkArr:[]
+        checkArr:[],   //选中的权限的id数组
+        roleId:1          //角色id
     };
   },
   mounted() {
     this.getallRole();
   },
   methods: {
+
+    // 为角色设置新的权限
+    async updateRight(){
+
+      // 通过打开对话框的方法首先获取角色的id
+      // :roleId	角色 ID	不能为空携带在url中
+      // rids	权限 ID 列表	以 , 分割的权限 ID 列表
+      // 获取全选的id的数组arr1 getCheckedKeys()
+        const arr1=this.$refs.tree.getCheckedKeys()
+      // 获取半选的id的数据arr2 getHalfCheckedKeys()
+      const arr2=this.$refs.tree.getHalfCheckedKeys()
+      // 将两个数组合并  并以,分割
+      const str=[...arr1,...arr2].join(',')
+      const res=await this.$http.post(`roles/${this.roleId}/rights`,{
+        rids:str
+      })
+      // console.log(res)
+      if(res.data.meta.status===200){
+        this.dialogFormVisibleRight=false
+       this.$message.success(res.data.meta.msg)
+      }else{
+        this.$message.warning(res.data.meta.msg)
+      }
+      
+    },  
+
     // 显示分配权限的对话框
     async showRolDialogRight(role) {
+      this.roleId=role.id
       this.dialogFormVisibleRight = true;
     // 获取所有权限
     const res=await this.$http.get(`rights/tree`)

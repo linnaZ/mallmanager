@@ -34,10 +34,11 @@ export default {
                       console.log(res)  
                     const {data,meta:{status,msg}}=res.data
                     if (status === 200) {
+                         // 登录成功后将后台返回的data中token值存到localStorage
+                        localStorage.setItem('token',data.token)
                         this.$router.push({ name: 'home'})
                         this.$message.success(msg);
-                        // 登录成功后将后台返回的data中token值存到localStorage
-                        localStorage.setItem('token',data.token)
+                       
                         // console.log(data.token)
                     }else{
                         this.$message.error(msg);

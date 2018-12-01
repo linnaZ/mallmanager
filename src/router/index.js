@@ -5,6 +5,10 @@ import Home from '@/components/home/home.vue'
 import Users from '@/components/user/users.vue'
 import Rights from '@/components/right/rights.vue'
 import Role from '@/components/right/role.vue'
+import {
+  Message
+} from 'element-ui'
+
 
 
 Vue.use(Router)
@@ -33,8 +37,8 @@ var router = new Router({
           component: Rights
         },
         {
-          path: '/role',
-          name: 'role',
+          path: '/roles',
+          name: 'roles',
           component: Role
         }
 
@@ -56,7 +60,8 @@ router.beforeEach(function (to, from, next) {
 
     if (!token) {
       // token 没有 -> 登录
-      this.$router.push({ name: 'login' })
+      Message.warning('请先登录')
+      router.push({ name: 'login' })
       return
     }
     next()

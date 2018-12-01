@@ -17,78 +17,19 @@
             <!--侧边栏-->
             <el-aside width="200px" class="home-aside">
                 <el-menu unique-opened :router="true" class="el-menu">
-                    <el-submenu index="1">
+                    <el-submenu :index="item1.order+''" v-for="(item1,index) in menuList" :key="index">
                         <template slot="title">
                             <i class="el-icon-location"></i>
-                            <span>用户管理</span>
+                            <span>{{item1.authName}}</span>
                         </template>
-                        <el-menu-item-group>
-                            <el-menu-item index="users">
+                        <el-menu-item-group v-for="(item2,index) in item1.children" :key="index">
+                            <el-menu-item :index="item2.path">
                                 <i class="el-icon-goods"></i>
-                                用户列表
+                                {{item2.authName}}
                             </el-menu-item>
                         </el-menu-item-group>
                     </el-submenu>
-                    <el-submenu index="2">
-                        <template slot="title">
-                            <i class="el-icon-location"></i>
-                            <span>权限管理</span>
-                        </template>
-                        <el-menu-item-group>
-                            <el-menu-item index="role">
-                                <i class="el-icon-goods"></i>
-                                角色列表
-                            </el-menu-item>
-                            <el-menu-item index="rights">
-                                <i class="el-icon-goods"></i>
-                                权限列表
-                            </el-menu-item>
-                        </el-menu-item-group>
-                    </el-submenu>
-                    <el-submenu index="3">
-                        <template slot="title">
-                            <i class="el-icon-star-on"></i>
-                            <span>商品管理</span>
-                        </template>
-                        <el-menu-item-group>
-                            <el-menu-item index="1-1">
-                                <i class="el-icon-goods"></i>
-                                商品列表
-                            </el-menu-item>
-                            <el-menu-item index="1-2">
-                                <i class="el-icon-goods"></i>
-                                分类参数
-                            </el-menu-item>
-                            <el-menu-item index="1-3">
-                                <i class="el-icon-goods"></i>
-                                商品分类
-                            </el-menu-item>
-                        </el-menu-item-group>
-                    </el-submenu>
-                    <el-submenu index="4">
-                        <template slot="title">
-                            <i class="el-icon-location"></i>
-                            <span>订单管理</span>
-                        </template>
-                        <el-menu-item-group>
-                            <el-menu-item index="1-1">
-                                <i class="el-icon-goods"></i>
-                                订单列表
-                            </el-menu-item>
-                        </el-menu-item-group>
-                    </el-submenu>
-                    <el-submenu index="5">
-                        <template slot="title">
-                            <i class="el-icon-location"></i>
-                            <span>数据统计</span>
-                        </template>
-                        <el-menu-item-group>
-                            <el-menu-item index="1-1">
-                                <i class="el-icon-goods"></i>
-                                数据报表
-                            </el-menu-item>
-                        </el-menu-item-group>
-                    </el-submenu>
+                    
 
                 </el-menu>
             </el-aside>
@@ -107,7 +48,7 @@ export default {
     
         data() {
            return{
-               
+               menuList:[]
            }
             
         },
@@ -123,8 +64,16 @@ export default {
         //     // if token 有 -> 继续渲染组件
         // },
     
-        
+        created(){
+            this.getmenus();
+        },
         methods: {
+            // 获取左侧导航数据
+            async getmenus(){
+                const res=await this.$http.get('menus')
+                console.log(res)
+                this.menuList=res.data.data
+            },
             handleSignout() {
                 // 清除session
                 localStorage.clear()

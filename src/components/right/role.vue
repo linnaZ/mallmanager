@@ -172,7 +172,7 @@ export default {
       const res = await this.$http.get("roles");
       // console.log(res)
       this.roleList = res.data.data;
-      console.log(this.roleList);
+      // console.log(this.roleList);
     }
   }
 };

@@ -45,7 +45,8 @@
         </el-table>
 
         <!--分页-->
-        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page='pagenum' :page-sizes="[2, 4, 6, 8]" :page-size='pagesize' layout="total, sizes, prev, pager, next, jumper" :total="total">
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" 
+        :current-page='pagenum' :page-sizes="[2, 4, 6, 8]" :page-size='pagesize' layout="total, sizes, prev, pager, next, jumper" :total="total">
         </el-pagination>
 
         <!--添加用户的对话框-->

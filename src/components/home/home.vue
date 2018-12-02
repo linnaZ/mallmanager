@@ -71,7 +71,7 @@ export default {
             // 获取左侧导航数据
             async getmenus(){
                 const res=await this.$http.get('menus')
-                console.log(res)
+                // console.log(res)
                 this.menuList=res.data.data
             },
             handleSignout() {
